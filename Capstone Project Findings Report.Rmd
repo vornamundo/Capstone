@@ -1,0 +1,82 @@
+---
+title: "Capstone Project Statistical Analysis"
+author: "Anna Vaughan"
+date: "January 16, 2018"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```  
+
+
+## Capstone Project Statistical Analysis
+A summary of the most interesting/important findings from my analysis
+  
+### Revised problem that my Capstone project will solve
+The overall aim is to understand where MMU's applications are stronger than UoS's (in terms of application numbers, subject balance and applicant regional origin), to help UoS academics and marketing teams understand where recruitment opportunities may be being missed, so that they can focus effort and resources on those opportunities.
+-	How do overall UCAS application numbers to the University of Salford (UoS) compare with application numbers to Manchester Metropolitan University (MMU)? Who receives more applications?
+- How did overall UCAS application numbers to each university change over time from 2006 to 2016? Did one grow ahead of the other?
+- How does the spread of subject groups applied for at MMU and Salford compare?
+-	How does the spread of subjects applied for UK-wide compare to the spread at MMU and UoS?
+-	How does the spread of applicant domiciles at MMU compare with that at UoS?
+
+
+#### Overall UCAS application numbers to UoS vs MMU
+- What were application numbers at MMU and Salford, across the period 2006 to 2016?
+Reshaping the data in MMU_Salf_App_Numbers_4 showed the data just for the two institutions being compared: application numbers to MMU look to be consistently larger than those for Salford for each year, with application numbers to MMU mostly more than double those to Salford, though in some years the difference was larger than others.
+
+Reshaping the data to MMU_Salf_App_Numbers_6 showed the data as one institution per column just for the two institutions being compared, allowing me to sum applications across the 11 years: total application numbers to MMU were 522,190 (70.5% of the two institutions' combined total), while those to Salford were 217,580 (29.5% of the total).
+
+
+
+INSERT MMU_Salf_App_Numbers_6
+
+#### Trends in UCAS application numbers to UoS vs MMU over time
+-	How have application number changed over time at MMU and UoS?
+Plotting the application numbers to each instituion by year as a scatter plot and applying a trend line helps clarify trends in application numbers.
+
+```{r applications_by_year_by_inst, echo=FALSE}
+plot(applications_by_year_by_inst)
+```
+
+UoS saw a consistent increase in applications 2006 to 2011, then a sharp fall in 2012 followed by a gradual increase to 2016. UoS received its smallest number of applications in 2006 (16,325) and its largest in 2016 (23,660).
+
+MMU's application numbers followed a more complex pattern: in addition to the pattern seen in UoS's numbers, MMU also saw a dip in applications in 2008, and saw fewer applications in 2015 and 2016 than it did in 2014. 
+
+
+Plotting a histogram showing the percentage share of the total applications to both institutions that each institution received helps in understanding the relative percentage of applications received by each institution regardless of the total application numbers.
+
+```{r application_percentage_by_year_by_inst, echo=FALSE}
+plot(application_percentage_by_year_by_inst)
+```
+
+The plot shows that UoS's percentage share of the applications to both institutions fluctuated between 27% and 32% across the period 2006-2016, with UoS's share increasing fairly steadily in recent years (between 2013 and 2016).
+
+
+(There seems to be far more variability in MMU’s applications than Salford’s year-on-year, but it would be good to look at the variance and standard deviation to check this).
+
+
+#### How does the spread of subject groups applied for at MMU and Salford compare?
+A table showing the percentage of an institutions' total applications that are for each subject groups helps clarify the balance of applications by subject group across the two institutions.
+
+INSERT Subject_Group_2016_MMU_UoS_Percentage_Only_Spread_Totals)
+
+The table shows that 10% more of MMU's total applications are for Business and Admin Studies than of UoS's total applications (21% vs 11%), that 6% more are for Biological Sciences (12% vs 6%), and 3% more are for each of Social Studies (8% vs 5%), History and Philosophical studies (3% vs 0%), and Creative Arts and Design (14% vs 11%). 
+
+As these are subject areas where not only does MMU receive a greater volume of applications, but it receives a higher percentage of its total applications, these would be potentially fruitful areas for UoS's academics and marketing team to target to increase applications.
+
+The data also suggests that each institution is heavily reliant on particular subject areas for a large proportion of its applications: MMU receives 21% of all its applications for the Business and Admin Studies subject area, while UoS receives 29% of all its applications for the Subjects Allied to Medicine subject area. While these subject areas are traditional strengths for each institution, it would be worth the marketing teams in particular being aware of the institutions' current heavy reliance on these subjects so that they could diversify the application spread and reduce the risk to university income from a future downturn in their one key subject area.
+
+
+
+#### How does the spread of applicant domiciles at MMU compare with that at UoS?
+Creating a column chart showing the percentage of each of MMU's and UoS's applications from each UK region shows that UoS is more heavily reliant on applications from the local region (North West) than MMU, with two thirds of 2016 applications (66%) coming from this region for UoS, compared with only 45% for MMU.
+
+```{r applications_2016_by_region_by_inst_percentage, echo=FALSE}
+plot(applications_2016_by_region_by_inst_percentage)
+```
+
+The regions outside the North West that were providing the largest percentages of applications to MMU were Yorkshire and the Humber(15%), West Midlands (9%) and East Midlands (7%), suggesting that UoS should target these regions in particular to boost applications in the future.
