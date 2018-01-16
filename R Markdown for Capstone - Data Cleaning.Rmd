@@ -1,0 +1,76 @@
+---
+title: "R Markdown for Capstone - Data Cleaning"
+author: "Anna Vaughan"
+date: "January 16, 2018"
+output:
+  word_document: default
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Capstone Project - Data Cleaning
+
+## I wanted to explore the files I had imported and clean them up (take out any blank fields, check for NA values etc).
+
+
+### First I renamed the files to show their content (and viewed a summary to check them), then tidied them to removed blank columns and checked for NA values
+
+EOC_data_resource_2016_DR4_005_03_Provider_Domicile <- EOC_data_resource_2016_DR4_005_03
+EOC_data_resource_2016_DR3_027_03_Subject_Domicile <- EOC_data_resource_2016_DR3_027_03
+EOC_data_resource_2016_DR3_018_03_Subject_Age <- EOC_data_resource_2016_DR3_018_03
+summary(EOC_data_resource_2016_DR3_018_03_Subject_Age)
+summary(EOC_data_resource_2016_DR3_027_03_Subject_Domicile)
+summary(EOC_data_resource_2016_DR4_005_03_Provider_Domicile)
+Provider_Domicile_EOC_data_resource_2016_DR4_005_03 <- select(EOC_data_resource_2016_DR4_005_03_Provider_Domicile, -X5)
+Subject_Age_EOC_data_resource_2016_DR3_018_03 <- select(EOC_data_resource_2016_DR3_018_03_Subject_Age, -X5)
+Subject_Domicile_EOC_data_resource_2016_DR3_027_03 <- select(EOC_data_resource_2016_DR3_027_03_Subject_Domicile, -X5)
+any(is.na(Provider_Domicile_EOC_data_resource_2016_DR4_005_03))
+any(is.na(Subject_Age_EOC_data_resource_2016_DR3_018_03))
+any(is.na(Subject_Domicile_EOC_data_resource_2016_DR3_027_03))
+
+### I then reviewed the values in each of the files more closely, first viewing a summary for each of them, then checking for any outlier values in each field
+
+summary(Subject_Age_EOC_data_resource_2016_DR3_018_03)
+unique(Subject_Age_EOC_data_resource_2016_DR3_018_03$`Age Band`)
+unique(Subject_Age_EOC_data_resource_2016_DR3_018_03$`Subject Group (Detailed Level)`)
+unique(Subject_Age_EOC_data_resource_2016_DR3_018_03$`Cycle Year`)
+unique(Subject_Age_EOC_data_resource_2016_DR3_018_03$`Number of Applications`)
+summary(Subject_Domicile_EOC_data_resource_2016_DR3_027_03)
+unique(Subject_Domicile_EOC_data_resource_2016_DR3_027_03$`Cycle Year`)
+unique(Subject_Domicile_EOC_data_resource_2016_DR3_027_03$`Subject Group (Detailed Level)`)
+unique(Subject_Domicile_EOC_data_resource_2016_DR3_027_03$`Applicant Domicile (Region)`)
+
+#### 'Unknown' was a category in Applicant Domicile, so I checked how many
+summary(Subject_Domicile_EOC_data_resource_2016_DR3_027_03$`Applicant Domicile (Region)` == "'Unknown'")
+summary(Provider_Domicile_EOC_data_resource_2016_DR4_005_03)
+unique(Provider_Domicile_EOC_data_resource_2016_DR4_005_03$`Cycle Year`)
+unique(Provider_Domicile_EOC_data_resource_2016_DR4_005_03$`Provider Name`)
+unique(Provider_Domicile_EOC_data_resource_2016_DR4_005_03$`Applicant Domicile (Region)`)
+unique(Provider_Domicile_EOC_data_resource_2016_DR4_005_03$`Number of Applications`)
+
+#### 'Unknown' was a category in Applicant Domicile, so I checked how many
+summary(Provider_Domicile_EOC_data_resource_2016_DR4_005_03$`Applicant Domicile (Region)` == "'Unknown'")
+
+### I then checked the format of the text within the files to see what needed tidying up, and standardising to allow easier manipulation of the data
+summary(Subject_Age_EOC_data_resource_2016_DR3_018_03)
+#### Single quotes needed removing from some fields
+Subject_Age_EOC_data_resource_2016_DR3_018_03$`Subject Group (Detailed Level)` <- gsub(pattern = "'", replacement = "", x = Subject_Age_EOC_data_resource_2016_DR3_018_03$`Subject Group (Detailed Level)`)
+Subject_Age_EOC_data_resource_2016_DR3_018_03$`Age Band` <- gsub(pattern = "'", replacement = "", x = Subject_Age_EOC_data_resource_2016_DR3_018_03$`Age Band`)
+Subject_Domicile_EOC_data_resource_2016_DR3_027_03$`Subject Group (Detailed Level)` <- gsub(pattern = "'", replacement = "", x = Subject_Domicile_EOC_data_resource_2016_DR3_027_03$`Subject Group (Detailed Level)`)
+Subject_Domicile_EOC_data_resource_2016_DR3_027_03$`Applicant Domicile (Region)` <- gsub(pattern = "'", replacement = "", x = Subject_Domicile_EOC_data_resource_2016_DR3_027_03$`Applicant Domicile (Region)`)
+Provider_Domicile_EOC_data_resource_2016_DR4_005_03$`Provider Name`<- gsub(pattern = "'", replacement = "", x = Provider_Domicile_EOC_data_resource_2016_DR4_005_03$`Provider Name`)
+Provider_Domicile_EOC_data_resource_2016_DR4_005_03$`Applicant Domicile (Region)` <- gsub(pattern = "'", replacement = "", x = Provider_Domicile_EOC_data_resource_2016_DR4_005_03$`Applicant Domicile (Region)`)
+
+### The Subject Domicile file contained data from a range of years, but the first way I would want to look at the subject vs domicile data was for one year only to see the relative balance of subjects and domiciles at a single point in time, so I created a new smaller file for 2016 only.
+class(Subject_Domicile_EOC_data_resource_2016_DR3_027_03$`Cycle Year`)
+Subject_Domicile_2016 <- subset(Subject_Domicile_EOC_data_resource_2016_DR3_027_03, Subject_Domicile_EOC_data_resource_2016_DR3_027_03$`Cycle Year` == 2016)
+
+### Finally I renamed columns within the Provider Domicile file to make them more meaningful, ahead of selecting and subsetting
+names(Provider_Domicile_EOC_data_resource_2016_DR4_005_03)[names(Provider_Domicile_EOC_data_resource_2016_DR4_005_03) == 'Cycle Year'] <- 'cycle_year'
+names(Provider_Domicile_EOC_data_resource_2016_DR4_005_03)[names(Provider_Domicile_EOC_data_resource_2016_DR4_005_03) == 'Provider Name'] <- 'provider_name'
+names(Provider_Domicile_EOC_data_resource_2016_DR4_005_03)[names(Provider_Domicile_EOC_data_resource_2016_DR4_005_03) == 'Applicant Domicile (Region)'] <- 'applicant_domicile_(region)'
+names(Provider_Domicile_EOC_data_resource_2016_DR4_005_03)[names(Provider_Domicile_EOC_data_resource_2016_DR4_005_03) == 'Number of Applications'] <- 'number_of_applications'

@@ -1,0 +1,44 @@
+---
+title: "R Markdown for Capstone - Data Import"
+author: "Anna Vaughan"
+date: "January 16, 2018"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Capstone Project - Data Import
+
+## I wanted to import all the UCAS csv files I might need in one command, first creating a list of all the csv files with UCAS data in them, to help me choose which to work on
+
+
+
+
+### First I checked and set my working directory
+getwd()
+setwd("C:/Users/AnnaVaughan/Capstone/Capstone")
+
+### I read a description of 1 file as a test
+readLines(("UCASData/EOC_data_resource_2016-DR2_051_06.csv"), n = 3)
+
+### Then created a list of all files (reducing their filenames to not include the extensions, and removing all non-csv files)
+allfiles <- list.files(path = "C:/Users/AnnaVaughan/Desktop/UCASData")
+allfilenames <- substr(allfiles,1,33)
+allcsvfilenames <- allfilenames [1:285]
+
+### I tried out reading a single csv file, importing it an creating a filename
+testimport <- read_csv("UCASData/EOC_data_resource_2016-DR2_001_01.csv", col_names = TRUE, skip = 5)
+names <-substr(filenames,1,33)EOC_data_resource_2016_DR3_027_03 <- read_csv("UCASData/EOC_data_resource_2016-DR3_027_03.csv", col_names = TRUE, skip = 5)
+
+
+## After trying for several hours using lapply and other functions, I decided instead to import the 3 files that I thought would be most useful in understanding the profile of applications to Salford and other institutions in actionable ways.
+
+### These were the ones that included details on student domicile, higher education instituion applied for, and subject applied for. The three most useful files from this perspective seemed to be a) HE Provider by Student UK Region Domicile, b) Subject Applied For by Student UK Region Domicile, and c) Subject Applied for by Age.
+EOC_data_resource_2016_DR3_027_03 <- read_csv("UCASData/EOC_data_resource_2016-DR3_027_03.csv", col_names = TRUE, skip = 5)
+EOC_data_resource_2016_DR3_018_03 <- read_csv("UCASData/EOC_data_resource_2016-DR3_018_03.csv", col_names = TRUE, skip = 5)
+EOC_data_resource_2016_DR4_005_03 <- read_csv("UCASData/EOC_data_resource_2016-DR4_005_03.csv", col_names = TRUE, skip = 5)
