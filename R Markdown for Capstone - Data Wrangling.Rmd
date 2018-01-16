@@ -1,0 +1,97 @@
+---
+title: "R Markdown for Capstone - Data Wrangling"
+author: "Anna Vaughan"
+date: "January 16, 2018"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Capstone Project - Data Wrangling
+
+## I wanted to further explore the files I had imported, and rearrange their contents into new files that showed the information in a format that gave me access to the combinations of variables that I needed to better understand the data.
+
+
+### First I created a reduced data frame to compare overall student numbers for MMU and Salford, by removing columns, grouping by and filtering
+MMU_Salf_App_Numbers_1 <- select(Provider_Domicile_EOC_data_resource_2016_DR4_005_03, "cycle_year", "provider_name", "number_of_applications")
+MMU_Salf_App_Numbers_2 <- MMU_Salf_App_Numbers_1 %>% group_by(cycle_year, provider_name) %>% summarise(number_of_applications = sum(number_of_applications))
+MMU_Salf_App_Numbers_3 <- filter(MMU_Salf_App_Numbers_2, provider_name %in% c("M40 The Manchester Metropolitan University", "S03 The University of Salford"))
+
+### I then created data frames in provider order, and that spread the year values and provider names into columns, and generated the total sum of applications by institution, to understand the changes in overall application numbers by institution
+MMU_Salf_App_Numbers_4 <- arrange(MMU_Salf_App_Numbers_3, provider_name, cycle_year)
+MMU_Salf_App_Numbers_5 <- spread(MMU_Salf_App_Numbers_4, cycle_year, number_of_applications)
+MMU_Salf_App_Numbers_6 <- spread(MMU_Salf_App_Numbers_4, provider_name, number_of_applications)
+sum(MMU_Salf_App_Numbers_6$`M40 The Manchester Metropolitan University`)
+sum(MMU_Salf_App_Numbers_6$`S03 The University of Salford`)
+
+### I used the data frame in provider order to plot applications to each institution over time, and saw an upward trend for both institutions, with MMU larger than Salford
+ggplot(MMU_Salf_App_Numbers_4, aes(x = cycle_year, y = number_of_applications, col = provider_name)) + geom_point() + geom_smooth(lwd = 2, se = FALSE)
+
+### I realised I could do with tidying up the column names in MMU_Salf_App_Numbers_6 by adding underscore
+names(MMU_Salf_App_Numbers_6) <- gsub(" ", ".", names(MMU_Salf_App_Numbers_6))
+str(MMU_Salf_App_Numbers_6)
+
+### I could see that MMU got more applications than Salford each year, but wanted to know how the balance each received changed over the years, by looking at the relative percentages of applications received by each institution (creating a total column and calculating the percentage, gathering institution name columns into one, before plotting a chart to show it)
+MMU_Salf_App_Numbers_7 <- MMU_Salf_App_Numbers_6 %>% mutate(total = M40.The.Manchester.Metropolitan.University + S03.The.University.of.Salford)
+MMU_Salf_App_Numbers_8 <- MMU_Salf_App_Numbers_7 %>% mutate(MMU_percentage = M40.The.Manchester.Metropolitan.University/total, UoS_percentage = S03.The.University.of.Salford/total)
+
+#### when trying to gather institution name columns into one, cycle.year wasn't recognised, so lookedup up fix on stackoverflow
+MMU_Salf_App_Numbers_8 <- as.data.frame(MMU_Salf_App_Numbers_8)
+MMU_Salf_App_Numbers_9 <- gather(MMU_Salf_App_Numbers_8, "HE_institution", "n", 2:3)
+
+MMU_Salf_App_Numbers_10 <- select(MMU_Salf_App_Numbers_9, cycle_year, MMU_percentage, UoS_percentage, HE_institution)
+
+#### I created two tables, one for each institution, to separate out percentages and then combine again (removing redundant columns and creating new columns)
+MMU_only_percentage <- filter(MMU_Salf_App_Numbers_10, HE_institution %in%  "M40.The.Manchester.Metropolitan.University")
+UoS_only_percentage <- filter(MMU_Salf_App_Numbers_10, HE_institution %in% "S03.The.University.of.Salford")
+MMU_only_percentage <- select(MMU_only_percentage, cycle_year, MMU_percentage, HE_institution)
+UoS_only_percentage <- select(UoS_only_percentage, cycle_year, UoS_percentage, HE_institution)
+MMU_only_percentage <- mutate(MMU_only_percentage, percentage = MMU_percentage)
+UoS_only_percentage <- mutate(UoS_only_percentage, percentage = UoS_percentage)
+MMU_only_percentage <- select(MMU_only_percentage, cycle_year, HE_institution, percentage)
+UoS_only_percentage <- select(UoS_only_percentage, cycle_year, HE_institution, percentage)
+MMU_Salf_App_Numbers_11 <- bind_rows(UoS_only_percentage, MMU_only_percentage)
+
+#### I could then plot a bar chart to see how the percentage of applications varied over time
+ggplot(MMU_Salf_App_Numbers_11, aes(x = cycle_year, y = percentage, fill = HE_institution)) + geom_bar(stat = "identity") + geom_smooth()
+
+
+### I could see that the relative application numbers to each institution varied only slightly, so decided to explore the subject mix applied for at each institution further
+
+#### First I imported and cleaned the Provider by Subject data
+EOC_data_resource_2016_DR4_016_03 <- read_csv("UCASData/EOC_data_resource_2016-DR4_016_03.csv", col_names = TRUE, skip = 5)
+EOC_data_resource_2016_DR4_016_03_Provider_Subject <- EOC_data_resource_2016_DR4_016_03
+summary(EOC_data_resource_2016_DR4_016_03_Provider_Subject)
+Provider_Subject_EOC_data_resource_2016_DR4_016_03 <- select(EOC_data_resource_2016_DR4_016_03_Provider_Subject, -X5)
+
+
+#### I created and cleaned a data frame only containing applications by subject for 2016 overall, to compare with the individual providers if useful
+Subject_Group_By_Year_Summary <- Provider_Subject_EOC_data_resource_2016_DR4_016_03 %>% group_by(`Cycle Year`, `Subject Group (Summary Level)` ) %>% summarise(sum = sum(`Number of Applications`))
+Subject_Group_2016_Summary <- filter(Subject_Group_By_Year_Summary, `Cycle Year` == 2016)
+Provider_Subject_EOC_data_resource_2016_DR4_016_03$`Provider Name` <- gsub(pattern = "'", replacement = "", x = Provider_Subject_EOC_data_resource_2016_DR4_016_03$`Provider Name`)
+Provider_Subject_EOC_data_resource_2016_DR4_016_03$`Subject Group (Summary Level)` <- gsub(pattern = "'", replacement = "", x = Provider_Subject_EOC_data_resource_2016_DR4_016_03$`Subject Group (Summary Level)`)
+
+### I then created and cleaned a data frame summarising subject and year just for MMU and UoS, and filtered to only include 2016 data
+Subject_Group_By_Year_MMU_UoS_Summary <- Provider_Subject_EOC_data_resource_2016_DR4_016_03 %>% filter(`Provider Name` %in% c("M40 The Manchester Metropolitan University", "S03 The University of Salford"))
+Subject_Group_2016_MMU_UoS_Summary <- filter(Subject_Group_By_Year_MMU_UoS_Summary, `Cycle Year` == 2016)
+Subject_Group_2016_Summary$`Subject Group (Summary Level)` <- gsub(pattern = "'", replacement = "", x = Subject_Group_2016_Summary$`Subject Group (Summary Level)`)
+
+#### I then combined the data frames to create one showing 2016 subject application numbers for MMU, UoS and Summary (Total), and cleaned up the result
+Subject_Group_2016_MMU_UoS_Plus_Summary <- bind_rows(Subject_Group_2016_MMU_UoS_Summary, Subject_Group_2016_Summary)
+Subject_Group_2016_MMU_UoS_Plus_Summary[is.na(Subject_Group_2016_MMU_UoS_Plus_Summary)] <- 0
+names(Subject_Group_2016_MMU_UoS_Plus_Summary)[names(Subject_Group_2016_MMU_UoS_Plus_Summary) == 'Number of Applications'] <- 'numapps'
+names(Subject_Group_2016_MMU_UoS_Plus_Summary)[names(Subject_Group_2016_MMU_UoS_Plus_Summary) == 'Cycle Year'] <- 'cycleyear'
+names(Subject_Group_2016_MMU_UoS_Plus_Summary)[names(Subject_Group_2016_MMU_UoS_Plus_Summary) == 'Provider Name'] <- 'providername'
+names(Subject_Group_2016_MMU_UoS_Plus_Summary)[names(Subject_Group_2016_MMU_UoS_Plus_Summary) == 'Subject Group (Summary Level)'] <- 'subjectgroupsummarylevel'
+names(Subject_Group_2016_MMU_UoS_Plus_Summary)[names(Subject_Group_2016_MMU_UoS_Plus_Summary) == 'Applications'] <- 'applications'
+
+#### Within the new data frame I created a combined Applications column to show total applications for MMU, UoS and Summary, removed unnecessary columns and cleaned up the data
+Subject_Group_2016_MMU_UoS_Plus_Summary <- mutate(Subject_Group_2016_MMU_UoS_Plus_Summary, Applications = numapps + sum)
+Subject_Group_2016_MMU_UoS_Plus_Summary_Small <- select(Subject_Group_2016_MMU_UoS_Plus_Summary, providername, subjectgroupsummarylevel, Applications)
+Subject_Group_2016_MMU_UoS_Plus_Summary_Small$providername <- gsub(pattern = "S03 ", replacement = "", x = Subject_Group_2016_MMU_UoS_Plus_Summary_Small$providername)
+Subject_Group_2016_MMU_UoS_Plus_Summary_Small$providername <- gsub(pattern = "M40 ", replacement = "", x = Subject_Group_2016_MMU_UoS_Plus_Summary_Small$providername)
+Subject_Group_2016_MMU_UoS_Plus_Summary_Small$providername <- gsub(pattern = "0", replacement = "Total (UCAS wide)", x = Subject_Group_2016_MMU_UoS_Plus_Summary_Small$providername)
