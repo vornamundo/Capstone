@@ -4,7 +4,7 @@ library(readr)
 library(dplyr)
 #check and set working directory
 getwd()
-setwd("C:/Users/AnnaVaughan/Desktop")
+setwd("C:/Users/AnnaVaughan/Desktop/Capstone/Capstone")
 #read description of 1 test file
 readLines(("UCASData/EOC_data_resource_2016-DR2_051_06.csv"), n = 3)
 #create list of all files including extensions
