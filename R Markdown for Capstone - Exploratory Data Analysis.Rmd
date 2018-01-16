@@ -1,0 +1,41 @@
+---
+title: "R Markdown for Capstone - Exploratory Data Analysis"
+author: "Anna Vaughan"
+date: "January 16, 2018"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Capstone Project - Exploratory Data Analysis
+
+## I wanted to understand the relative balance of subject areas applied for to MMU and UoS, to see which subjects were more popular at MMU, and so which subjects UoS could seek to draw students away from MMU for.
+
+
+### I wanted to explore applications by subject area for each institution graphically - I first plotted a scatterplot of application numbers by subject by provider, but realised I needed to look at percentages instead, so calculated what (rounded) percentage of applications each institution received for each subject area and plotted that instead
+ggplot(Subject_Group_2016_MMU_UoS_Plus_Summary_Small, aes(x = subjectgroupsummarylevel, y = Applications, col = providername)) + geom_point() + geom_smooth(lwd = 2, se = FALSE)
+Subject_Group_2016_MMU_UoS_Plus_Summary_Small_Total <- Subject_Group_2016_MMU_UoS_Plus_Summary_Small %>% group_by(providername) %>% mutate(totalapps = sum(Applications))
+Subject_Group_2016_MMU_UoS_Plus_Summary_Small_Extra <- Subject_Group_2016_MMU_UoS_Plus_Summary_Small_Total %>% mutate(subjappspercent = Applications/totalapps)
+Subject_Group_2016_MMU_UoS_Plus_Summary_Small_Extra$subjappspercent <- Subject_Group_2016_MMU_UoS_Plus_Summary_Small_Extra$subjappspercent * 100
+Subject_Group_2016_MMU_UoS_Plus_Summary_Small_Extra <- Subject_Group_2016_MMU_UoS_Plus_Summary_Small_Extra %>% mutate(subjappspercent = round(subjappspercent, 0))
+ggplot(Subject_Group_2016_MMU_UoS_Plus_Summary_Small_Extra, aes(x = subjectgroupsummarylevel, y = subjappspercent, col = providername)) + geom_point() + geom_smooth(lwd = 2, se = FALSE)
+
+
+#### The scatterplot didn't give a clear view of differences, so I tried a column chart instead
+ggplot(Subject_Group_2016_MMU_UoS_Plus_Summary_Small_Extra, aes(x = subjectgroupsummarylevel, y = subjappspercent, fill = providername)) + geom_col(position = "dodge")
+
+### The column chart suggested there are major differences between MMU and UoS' application numbers (green and red columns), so I created a table to show the differences more clearly
+Subject_Group_2016_MMU_UoS_Percentage_Only <- filter(Subject_Group_2016_MMU_UoS_Plus_Summary_Small_Extra, providername == c("The Manchester Metropolitan University", "The University of Salford"))
+
+#### To make the table easier to read, I removed UCAS total rows, and columns other than provider, subject and percentage, before spreading out the provider columns
+Subject_Group_2016_MMU_UoS_Percentage_Only <- filter(Subject_Group_2016_MMU_UoS_Plus_Summary_Small_Extra, providername != "Total (UCAS wide)")
+Subject_Group_2016_MMU_UoS_Percentage_Only <- select(Subject_Group_2016_MMU_UoS_Percentage_Only, providername, subjectgroupsummarylevel, subjappspercent)
+Subject_Group_2016_MMU_UoS_Percentage_Only_Spread <- spread(Subject_Group_2016_MMU_UoS_Percentage_Only, providername, subjappspercent)
+
+#### The percentage differences between MMU and UoS seemed substantial for several subjects, so I calculated the difference in the percentage of applications that each subject area made up between MMU and Salford (so that any subject that Salford had a lower percentage in shows as negative), and reordered the data to show the largest differences first
+Subject_Group_2016_MMU_UoS_Percentage_Only_Spread_Totals <- mutate(Subject_Group_2016_MMU_UoS_Percentage_Only_Spread, difference = `The University of Salford` - `The Manchester Metropolitan University`)
+Subject_Group_2016_MMU_UoS_Percentage_Only_Spread_Totals <- arrange(Subject_Group_2016_MMU_UoS_Percentage_Only_Spread_Totals, difference)
