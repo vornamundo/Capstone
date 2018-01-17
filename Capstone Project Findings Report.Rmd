@@ -1,5 +1,5 @@
 ---
-title: "Capstone Project Statistical Analysis"
+title: "Capstone Project Findings Report"
 author: "Anna Vaughan"
 date: "January 16, 2018"
 output:
@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```  
 
 
-## Capstone Project Statistical Analysis
+## Capstone Project Findings Report
 A summary of the most interesting/important findings from my analysis
   
 ### Revised problem that my Capstone project will solve
