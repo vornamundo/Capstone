@@ -170,6 +170,7 @@ MMU_Salf_App_Numbers_11 <- bind_rows(UoS_only_percentage, MMU_only_percentage)
 View(MMU_Salf_App_Numbers_11)
 #plot bar chart to see how percentage of applications varies over time
 application_percentage_by_year_by_inst <- ggplot(MMU_Salf_App_Numbers_11, aes(x = cycle_year, y = percentage, fill = HE_institution)) + geom_bar(stat = "identity") + geom_smooth()
+plot(application_percentage_by_year_by_inst)
 #import provider by subject data
 EOC_data_resource_2016_DR4_016_03 <- read_csv("UCASData/EOC_data_resource_2016-DR4_016_03.csv", col_names = TRUE, skip = 5)
 #clarify name of the file to make it easier to work with
@@ -315,3 +316,4 @@ Provider_Domicile_2016_MMU_and_UoS_Percentage_Apps_Region_Clean <- Provider_Domi
 View(Provider_Domicile_2016_MMU_and_UoS_Percentage_Apps_Region_Clean)
 #plot column chart to show differences in regional percentages
 applications_2016_by_region_by_inst_percentage <- ggplot(Provider_Domicile_2016_MMU_and_UoS_Percentage_Apps_Region_Clean, aes(x = applicant_region, y = percentage_from_region, fill = provider)) + geom_col(position = "dodge")
+plot(applications_2016_by_region_by_inst_percentage)
