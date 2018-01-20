@@ -15,6 +15,7 @@ library(tidyverse)
 library(knitr)
 knitr::opts_chunk$set(echo = F)
 message=FALSE
+options(knitr.table.format = "latex")
 ```
 
 
@@ -44,7 +45,10 @@ Reshaping the data in MMU_Salf_App_Numbers_4 showed the data just for the two in
 
 Reshaping the data to MMU_Salf_App_Numbers_6 showed the data as one institution per column just for the two institutions being compared, allowing me to sum applications across the 11 years: total application numbers to MMU were 522,190 (70.5% of the two institutions' combined total), while those to Salford were 217,580 (29.5% of the total).
 
-INSERT TABLE FROM DATA FRAME MMU_Salf_App_Numbers_6
+```{r results = 'asis'}
+library(knitr)
+kable(MMU_Salf_App_Numbers_6, caption = "Applications by higher education institution")
+```
 
 #### Trends in UCAS application numbers to UoS vs MMU over time
 -	How have application number changed over time at MMU and UoS?
@@ -74,7 +78,12 @@ The plot shows that UoS's percentage share of the applications to both instituti
 #### How does the spread of subject groups applied for at MMU and Salford compare?
 A table showing the percentage of an institutions' total applications that are for each subject groups helps clarify the balance of applications by subject group across the two institutions.
 
-INSERT TABLE FROM DATA FRAME Subject_Group_2016_MMU_UoS_Percentage_Only_Spread_Totals
+```{r results = 'asis'}
+library(knitr)
+library(kableExtra)
+kable(cbind(Subject_Group_2016_MMU_UoS_Percentage_Only_Spread_Totals), caption = "Percentage of institution's total applications that are for each subject group, by higher education institution", format = "latex", booktabs = T) %>%
+kable_styling(latex_options = c("striped", "scale_down"))
+```
 
 The table shows that 10% more of MMU's total applications are for Business and Admin Studies than of UoS's total applications (21% vs 11%), that 6% more are for Biological Sciences (12% vs 6%), and 3% more are for each of Social Studies (8% vs 5%), History and Philosophical studies (3% vs 0%), and Creative Arts and Design (14% vs 11%). 
 
