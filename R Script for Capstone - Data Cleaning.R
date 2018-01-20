@@ -1,3 +1,5 @@
+#prevent warnings showing through
+warnings=False
 #rename files to show their content
 EOC_data_resource_2016_DR4_005_03_Provider_Domicile <- EOC_data_resource_2016_DR4_005_03
 EOC_data_resource_2016_DR3_027_03_Subject_Domicile <- EOC_data_resource_2016_DR3_027_03
@@ -56,3 +58,4 @@ names(Provider_Domicile_EOC_data_resource_2016_DR4_005_03)[names(Provider_Domici
 names(Provider_Domicile_EOC_data_resource_2016_DR4_005_03)[names(Provider_Domicile_EOC_data_resource_2016_DR4_005_03) == 'Provider Name'] <- 'provider_name'
 names(Provider_Domicile_EOC_data_resource_2016_DR4_005_03)[names(Provider_Domicile_EOC_data_resource_2016_DR4_005_03) == 'Applicant Domicile (Region)'] <- 'applicant_domicile_(region)'
 names(Provider_Domicile_EOC_data_resource_2016_DR4_005_03)[names(Provider_Domicile_EOC_data_resource_2016_DR4_005_03) == 'Number of Applications'] <- 'number_of_applications'
+

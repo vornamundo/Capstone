@@ -1,3 +1,5 @@
+#prevent warnings showing through
+warnings=False
 #create reduced dataframe to compare overall student numbers for MMU and Salford
 #remove regions column and check outcome
 MMU_Salf_App_Numbers_1 <- select(Provider_Domicile_EOC_data_resource_2016_DR4_005_03, "cycle_year", "provider_name", "number_of_applications")
@@ -15,7 +17,7 @@ MMU_Salf_App_Numbers_6 <- spread(MMU_Salf_App_Numbers_4, provider_name, number_o
 sum(MMU_Salf_App_Numbers_6$`M40 The Manchester Metropolitan University`)
 sum(MMU_Salf_App_Numbers_6$`S03 The University of Salford`)
 #plot scatter plot of application numbers to each institution over time
-ggplot(MMU_Salf_App_Numbers_4, aes(x = cycle_year, y = number_of_applications, col = provider_name)) + geom_point() + geom_smooth(lwd = 2, se = FALSE)
+applications_by_year_by_inst <- ggplot(MMU_Salf_App_Numbers_4, aes(x = cycle_year, y = number_of_applications, col = provider_name)) + geom_point() + geom_smooth(lwd = 2, se = FALSE)
 #tidy up column names in MMU_Salf_App_Numbers_6 by adding underscore, and check outcome
 names(MMU_Salf_App_Numbers_6) <- gsub(" ", ".", names(MMU_Salf_App_Numbers_6))
 str(MMU_Salf_App_Numbers_6)
@@ -44,7 +46,7 @@ UoS_only_percentage <- select(UoS_only_percentage, cycle_year, HE_institution, p
 #combine the two dataframes back together
 MMU_Salf_App_Numbers_11 <- bind_rows(UoS_only_percentage, MMU_only_percentage)
 #plot bar chart to see how percentage of applications varies over time
-ggplot(MMU_Salf_App_Numbers_11, aes(x = cycle_year, y = percentage, fill = HE_institution)) + geom_bar(stat = "identity") + geom_smooth()
+application_percentage_by_year_by_inst <- ggplot(MMU_Salf_App_Numbers_11, aes(x = cycle_year, y = percentage, fill = HE_institution)) + geom_bar(stat = "identity") + geom_smooth()
 #import provider by subject data
 EOC_data_resource_2016_DR4_016_03 <- read_csv("UCASData/EOC_data_resource_2016-DR4_016_03.csv", col_names = TRUE, skip = 5)
 #clarify name of the file to make it easier to work with
