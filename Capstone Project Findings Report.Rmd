@@ -3,15 +3,28 @@ title: "Capstone Project Findings Report"
 author: "Anna Vaughan"
 date: "January 16, 2018"
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
   word_document: default
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```  
 
+
+```{r setup, echo = F}
+library(tidyverse)
+library(knitr)
+knitr::opts_chunk$set(echo = F)
+message=FALSE
+```
+
+
+
+```{r process_all, echo = FALSE, cache = T}
+source("R Script for Capstone - Data Import.R")
+source("R Script for Capstone - Data Cleaning.R")
+source("R Script for Capstone - Data Wrangling.R")
+source("R Script for Capstone - Exploratory Data Analysis.R")
+```
 
 ## Capstone Project Findings Report
 A summary of the most interesting/important findings from my analysis
@@ -31,18 +44,16 @@ Reshaping the data in MMU_Salf_App_Numbers_4 showed the data just for the two in
 
 Reshaping the data to MMU_Salf_App_Numbers_6 showed the data as one institution per column just for the two institutions being compared, allowing me to sum applications across the 11 years: total application numbers to MMU were 522,190 (70.5% of the two institutions' combined total), while those to Salford were 217,580 (29.5% of the total).
 
-
-
-INSERT TABLE FROM DATA FRAME MMU_Salf_App_Numbers_6 
+INSERT TABLE FROM DATA FRAME MMU_Salf_App_Numbers_6
 
 #### Trends in UCAS application numbers to UoS vs MMU over time
 -	How have application number changed over time at MMU and UoS?
 Plotting the application numbers to each instituion by year as a scatter plot and applying a trend line helps clarify trends in application numbers.
 
+
 ```{r applications_by_year_by_inst}
 plot(applications_by_year_by_inst)
 ```
-
 
 UoS saw a consistent increase in applications 2006 to 2011, then a sharp fall in 2012 followed by a gradual increase to 2016. UoS received its smallest number of applications in 2006 (16,325) and its largest in 2016 (23,660).
 
@@ -63,7 +74,7 @@ The plot shows that UoS's percentage share of the applications to both instituti
 #### How does the spread of subject groups applied for at MMU and Salford compare?
 A table showing the percentage of an institutions' total applications that are for each subject groups helps clarify the balance of applications by subject group across the two institutions.
 
-INSERT TABLE FROM DATA FRAME Subject_Group_2016_MMU_UoS_Percentage_Only_Spread_Totals)
+INSERT TABLE FROM DATA FRAME Subject_Group_2016_MMU_UoS_Percentage_Only_Spread_Totals
 
 The table shows that 10% more of MMU's total applications are for Business and Admin Studies than of UoS's total applications (21% vs 11%), that 6% more are for Biological Sciences (12% vs 6%), and 3% more are for each of Social Studies (8% vs 5%), History and Philosophical studies (3% vs 0%), and Creative Arts and Design (14% vs 11%). 
 
